@@ -17,6 +17,7 @@ screen=pygame.display.set_mode((600,600))
 clock=pygame.time.Clock()
 pygame.display.set_caption("閩客械鬥")
 #載入imgs
+init_img=pygame.image.load(os.path.join("img", "init0.png")).convert()
 background_img = pygame.image.load(os.path.join("img", "back3.jpg")).convert()
 player1_img = pygame.image.load(os.path.join("img", "p1_pic2.png")).convert()
 player2_img = pygame.image.load(os.path.join("img", "p2_pic.png")).convert()
@@ -397,10 +398,27 @@ def draw_life(surf,hp,x,y,bul):
     pygame.draw.rect(surf, WHITE, outline_rect2, 2)
 #screens
 def draw_init():
-    draw_text(screen, "按任意鍵開始", 64, WIDTH/2, HEIGHT/4)
+    screen.fill((0,0,0))
+    draw_text(screen, "按左Shift鍵開始", 64, WIDTH/2, HEIGHT/4)
     draw_text(screen, "客家人:上、左、右、右Ctrl鍵", 22, WIDTH/2, HEIGHT/2)
     draw_text(screen, "閩南人:W、A、D、空白鍵", 22, WIDTH/2-15, HEIGHT/2+40)
     draw_text(screen, "PS:飛鏢射到落石可回血，吃到能量可增加飛鏢數量", 14, WIDTH/2, HEIGHT*3/4)
+    pygame.display.update()
+    waiting = True
+    while waiting:
+        clock.tick(FPS)
+        # 取得輸入
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return True
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LSHIFT:                   
+                    waiting = False                    
+                    return False
+def draw_init0():
+    draw_text(screen, "按下任意鍵下一頁", 24, WIDTH/2, HEIGHT*3/4)
+    screen.blit(init_img, (0,30))
     pygame.display.update()
     waiting = True
     while waiting:
@@ -449,10 +467,17 @@ def drawp2win():
                     return False
 #game start
 running=True
-show_init=True
+show_init0=True
+show_init=False
 show_p1win=False
 show_p2win=False
 while running:
+    if show_init0:
+        close = draw_init0()
+        if close:
+            break
+        show_init0 = False
+        show_init=True
     if show_init:
         close = draw_init()
         if close:
